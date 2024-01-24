@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="flex flex-col h-screen">
+      <div class="mx-auto">
+        <form action="/" class="">
+          <div class="flex">
+            <input
+              class="flex h-10 rounded-md border border-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full bg-white shadow-none appearance-none pl-8 dark:bg-gray-950"
+              placeholder="Tweet something"
+              type="text"
+              name="tweet"
+              id="tweet"
+            />
+            <button
+              class="rounded-md border border-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-fit bg-white shadow-none appearance-none dark:bg-gray-950"
+              type="submit"
+              onclick="postTweet()"
+            >
+              Send
+            </button>
+          </div>
+        </form>
+      </div>
+      <main id="tweets" class="flex flex-1 flex-col p-4 md:p-6"></main>
+    </div>
+  </body>
+  <script>
+    const url = "http://127.0.0.1:5000/tweet";
+    function postTweet() {
+      content = document.getElementById("tweet").value;
+      user = JSON.parse(localStorage.getItem("usuario"));
+      // Dados a serem enviados no corpo da requisição
+      const dados = {
+        user_id: user.username,
+        content,
+      };
+
+      // URL do endpoint da sua API
+
+      // Configuração da requisição
+      const opcoes = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dados),
+      };
+
+      // Realiza a requisição usando fetch
+      fetch(url, opcoes)
+        .then((resposta) => resposta.json())
+        .then((dados) => {
+          console.log("Resposta da API:", dados);
+          // Faça algo com os dados da resposta, se necessário
+        })
+        .catch((erro) => {
+          console.error("Erro na requisição:", erro);
+        });
+    }
+
+    function getTweets() {
+      fetch(url)
+        .then((resposta) => resposta.json())
+        .then((dados) => {
+          const tweetsElement = document.getElementById("tweets"); // Seletor para o elemento com o ID "tweets"
+
+          // Itera sobre os tweets recebidos da API
+          dados.forEach((tweet) => {
+            // Cria os elementos HTML dinamicamente
+            const divElement = document.createElement("div");
+            divElement.classList.add(
+              "border",
+              "shadow-sm",
+              "rounded-lg",
+              "p-4"
+            );
+
+            const imgElement = document.createElement("img");
+            imgElement.src = "URL_DA_IMAGEM_DO_USUARIO"; // Atualize com a URL da imagem do usuário
+            imgElement.alt = tweet[1]; // Assumindo que o nome do usuário está na posição 1 do array
+
+            const nomeUsuarioElement = document.createElement("a");
+            nomeUsuarioElement.href = "#";
+            nomeUsuarioElement.classList.add("font-semibold");
+            nomeUsuarioElement.textContent = tweet[1]; // Assumindo que o nome do usuário está na posição 1 do array
+
+            const usuarioTagElement = document.createElement("span");
+            usuarioTagElement.classList.add(
+              "text-sm",
+              "text-gray-500",
+              "dark:text-gray-400"
+            );
+            usuarioTagElement.textContent = `@${tweet[1]}`; // Assumindo que o nome do usuário está na posição 1 do array
+
+            const pElement = document.createElement("p");
+            pElement.classList.add("mt-2", "text-sm");
+            pElement.textContent = tweet[2]; // Assumindo que o conteúdo do tweet está na posição 2 do array
+
+            // Adiciona o timestamp
+            const timestampElement = document.createElement("span");
+            timestampElement.classList.add(
+              "text-sm",
+              "text-gray-500",
+              "dark:text-gray-400"
+            );
+            timestampElement.textContent = tweet[3]; // Assumindo que o timestamp está na posição 3 do array
+
+            // Adiciona os elementos criados ao elemento com o ID "tweets"
+            divElement.appendChild(imgElement);
+            divElement.appendChild(nomeUsuarioElement);
+            divElement.appendChild(usuarioTagElement);
+            divElement.appendChild(pElement);
+            divElement.appendChild(timestampElement); // Adiciona o timestamp
+            tweetsElement.appendChild(divElement);
+          });
+        })
+        .catch((erro) => {
+          console.error("Erro na requisição:", erro);
+        });
+    }
+
+    // Chama a função para carregar os tweets quando a página carrega
+    document.addEventListener("DOMContentLoaded", getTweets);
+
+  </script>
+
+  <script>
+   
+    function checkUserLogin(){
+
+      // Obtém a lista de usuários do localStorage
+      var usuario = JSON.parse(localStorage.getItem("usuario"));
+
+      // Verifica se o usuário está logado
+      if(!usuario){
+        // Redireciona para a página de login
+        window.location.href = "/login";
+      }
+      if (!usuario && !usuario.expiration > Date.now()) {
+        // Redireciona para a página de login
+        window.location.href = "/login";
+      }
+    }
+
+    // Chama a função para verificar se o usuário está logado quando a página carrega
+    document.addEventListener("DOMContentLoaded", checkUserLogin);
+  </script>
+</html>

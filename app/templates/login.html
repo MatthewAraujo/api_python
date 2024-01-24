@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm mx-auto max-w-sm"
+      data-v0-t="card"
+    >
+      <div class="flex flex-col p-6 space-y-1">
+        <h3 class="whitespace-nowrap tracking-tight text-2xl font-bold">
+          Login
+        </h3>
+        <p class="text-sm text-muted-foreground">
+          Enter your credentials below to login to your account
+        </p>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <label
+              class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              for="username"
+              >Username</label
+            ><input
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              id="username"
+              placeholder="Enter your username"
+              required=""
+              type="username"
+            />
+          </div>
+          <div class="space-y-2">
+            <label
+              class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              for="email"
+              >Email</label
+            ><input
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              id="email"
+              placeholder="Enter your email"
+              required=""
+              type="email"
+            />
+          </div>
+          <div class="space-y-2">
+            <label
+              class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              for="password"
+              >Password</label
+            ><input
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              id="password"
+              placeholder="Enter your password"
+              required=""
+              type="password"
+            />
+          </div>
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full"
+            type="submit"
+            onclick="createUser()"
+          >
+            Login
+          </button>
+        </div>
+      </div>
+    </div>
+    <script>
+      const urlLogin = "http://127.0.0.1:5000/user"
+      async function createUser(){
+
+        var username = document.getElementById("username").value;
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+
+        const dados = {
+          username,
+          email,
+          password,
+        };
+
+        const opcoes = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dados),
+        };
+
+        const response = await fetch(urlLogin, opcoes);
+        console.log(response)
+        if (response.status == 200) {
+          addUserLocalStorage();
+          window.location.href = "/"
+        } else {
+          alert("Erro ao criar usuário");
+        }
+
+      }
+      function addUserLocalStorage() {
+        // Obtém os valores do formulário
+        var username = document.getElementById("username").value;
+        var email = document.getElementById("email").value;
+
+        // Cria um objeto de usuário com data de expiração em uma semana
+        var usuario = {
+          username: username,
+          email: email,
+          expiration: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 semana em milissegundos
+        };
+
+        // Armazena a lista atualizada de usuários no localStorage
+        localStorage.setItem("usuario", JSON.stringify(usuario));
+
+        alert("Usuário adicionado com sucesso!");
+      }
+    </script>
+  </body>
+</html>
