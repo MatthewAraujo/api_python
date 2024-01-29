@@ -1,5 +1,6 @@
 
-from flask import Flask, request, jsonify,Response, render_template,url_for,redirect
+from flask import Flask, request, jsonify, render_template,url_for,redirect,send_file
+from os import getcwd
 import database.mysql_provider as mysql_provider
 app = Flask(__name__)
 
@@ -35,7 +36,6 @@ def api_post_tweet():
     data = request.get_json()
     userId = data["user_id"]
     content = data["content"]
-    print(userId, content)
     mysql = mysql_provider.MySQL()
     mysql.query("INSERT INTO Tweets (user_id, content) VALUES ((SELECT user_id FROM Users WHERE username = %s), %s)", (userId, content))
     return jsonify(data)
@@ -43,7 +43,7 @@ def api_post_tweet():
 @app.route("/tweet", methods=['GET'])
 def api_get_tweet():
     mysql = mysql_provider.MySQL()
-    data = mysql.query("SELECT tweet_id, username, content, timestamp FROM Tweets T INNER JOIN Users U ON T.user_id = U.user_id;")
+    data = mysql.query("SELECT tweet_id, username, content, timestamp FROM Tweets T INNER JOIN Users U ON T.user_id = U.user_id ORDER BY timestamp DESC;")
     return jsonify(data)
 
 @app.route("/tweet/<int:tweet_id>", methods=['GET'])
@@ -83,12 +83,12 @@ def api_get_dump():
         for line in data:
             if count==0:
                 line = "User.user_id,User.username,User.email,Tweet.tweet_id,Tweet.content,Tweet.timestamp,Comment.comment_id,Comment.content,Comment.timestamp".split(",")
-            
             line = ','.join(map(str, line))
             f.write(line)
             f.write("\n")
             count+=1
-    return Response("OK", status=200, mimetype='application/json')
+    path = getcwd()+"/dump.txt"
+    return send_file(path, as_attachment=True)
 
 @app.errorhandler(404)
 def page_not_found(e):

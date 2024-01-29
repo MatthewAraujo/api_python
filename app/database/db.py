@@ -1,5 +1,4 @@
 from dotenv import load_dotenv
-
 # Load environment variables from the .env file
 load_dotenv()
 import os
@@ -16,4 +15,3 @@ connection = MySQLdb.connect(
   # to determine the path to your operating systems certificate file.
   ssl={ "ca": "/etc/ssl/certs/ca-certificates.crt" },
 )
-

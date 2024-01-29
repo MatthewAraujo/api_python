@@ -8,31 +8,62 @@
   </head>
   <body>
     <div class="flex flex-col h-screen">
-      <div class="mx-auto">
-        <form action="/" class="">
-          <div class="flex">
-            <input
-              class="flex h-10 rounded-md border border-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full bg-white shadow-none appearance-none pl-8 dark:bg-gray-950"
-              placeholder="Tweet something"
-              type="text"
-              name="tweet"
-              id="tweet"
-            />
-            <button
-              class="rounded-md border border-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-fit bg-white shadow-none appearance-none dark:bg-gray-950"
-              type="submit"
-              onclick="postTweet()"
-            >
-              Send
-            </button>
-          </div>
-        </form>
+      <div class="flex justify-between">
+        <div class="">
+          <button
+            class="rounded-md border border-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-fit bg-white shadow-none appearance-none dark:bg-gray-950"
+            type="submit"
+            onclick="dumpData()"
+          >
+            Dump all tweets
+          </button>
+        </div>
+        <div class="mx-auto">
+          <form action="/" class="">
+            <div class="flex">
+              <input
+                class="flex h-10 rounded-md border border-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full bg-white shadow-none appearance-none pl-8 dark:bg-gray-950"
+                placeholder="Tweet something"
+                type="text"
+                name="tweet"
+                id="tweet"
+              />
+              <button
+                class="rounded-md border border-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-fit bg-white shadow-none appearance-none dark:bg-gray-950"
+                type="submit"
+              >
+                Send
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="">
+          <button
+            class="rounded-md border border-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-fit bg-white shadow-none appearance-none dark:bg-gray-950"
+            type="submit"
+            onclick="logout()"
+          >
+            Logout
+          </button>
+        </div>
       </div>
+
       <main id="tweets" class="flex flex-1 flex-col p-4 md:p-6"></main>
     </div>
   </body>
   <script>
     const url = "http://127.0.0.1:5000/tweet";
+    onsubmit = (e) => {
+      e.preventDefault();
+      postTweet();
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve();
+        }, 1000);
+      }).then(() => {
+        window.location.reload();
+      });
+    };
     function postTweet() {
       content = document.getElementById("tweet").value;
       user = JSON.parse(localStorage.getItem("usuario"));
@@ -71,6 +102,11 @@
         .then((dados) => {
           const tweetsElement = document.getElementById("tweets"); // Seletor para o elemento com o ID "tweets"
 
+          if (dados.lentgh < 0) {
+            const html = "<h1> Não há tweets </h1>";
+            return (tweetsElement.innerHTML = html);
+          }
+
           // Itera sobre os tweets recebidos da API
           dados.forEach((tweet) => {
             // Cria os elementos HTML dinamicamente
@@ -81,10 +117,6 @@
               "rounded-lg",
               "p-4"
             );
-
-            const imgElement = document.createElement("img");
-            imgElement.src = "URL_DA_IMAGEM_DO_USUARIO"; // Atualize com a URL da imagem do usuário
-            imgElement.alt = tweet[1]; // Assumindo que o nome do usuário está na posição 1 do array
 
             const nomeUsuarioElement = document.createElement("a");
             nomeUsuarioElement.href = "#";
@@ -110,10 +142,11 @@
               "text-gray-500",
               "dark:text-gray-400"
             );
-            timestampElement.textContent = tweet[3]; // Assumindo que o timestamp está na posição 3 do array
+            const timestamp = new Date(tweet[3]); // Assuming the timestamp is in position 3 of the array
+            const ptBrTimestamp = timestamp.toLocaleString("pt-BR"); // Transforming the timestamp to PT-BR format
+            timestampElement.textContent = ptBrTimestamp;
 
             // Adiciona os elementos criados ao elemento com o ID "tweets"
-            divElement.appendChild(imgElement);
             divElement.appendChild(nomeUsuarioElement);
             divElement.appendChild(usuarioTagElement);
             divElement.appendChild(pElement);
@@ -128,18 +161,15 @@
 
     // Chama a função para carregar os tweets quando a página carrega
     document.addEventListener("DOMContentLoaded", getTweets);
-
   </script>
 
   <script>
-   
-    function checkUserLogin(){
-
+    function checkUserLogin() {
       // Obtém a lista de usuários do localStorage
       var usuario = JSON.parse(localStorage.getItem("usuario"));
 
       // Verifica se o usuário está logado
-      if(!usuario){
+      if (!usuario) {
         // Redireciona para a página de login
         window.location.href = "/login";
       }
@@ -148,8 +178,32 @@
         window.location.href = "/login";
       }
     }
-
     // Chama a função para verificar se o usuário está logado quando a página carrega
     document.addEventListener("DOMContentLoaded", checkUserLogin);
+  </script>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("usuario");
+      window.location.href = "/login";
+    }
+  </script>
+
+  <script>
+    async function dumpData() {
+      const url = "http://127.0.0.1:5000/dump";
+      const response = await fetch(url);
+      if (response.ok) {
+        const blob = await response.blob();
+
+        // Crie um link para o Blob e acione um clique para iniciar o download
+        const link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "dump.csv";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
   </script>
 </html>

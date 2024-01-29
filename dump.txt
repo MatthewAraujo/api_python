@@ -1,0 +1,14 @@
+User.user_id,User.username,User.email,Tweet.tweet_id,Tweet.content,Tweet.timestamp,Comment.comment_id,Comment.content,Comment.timestamp
+15,matthewipnet,matthewaraujo@gmail.cim,33,estamos vivos,2024-01-25 14:54:30,None,None,None
+15,matthewipnet,matthewaraujo@gmail.cim,34,chiclete,2024-01-25 14:55:13,None,None,None
+15,matthewipnet,matthewaraujo@gmail.cim,35,chiclete,2024-01-25 14:55:36,None,None,None
+15,matthewipnet,matthewaraujo@gmail.cim,36,luigi 'e um chato,2024-01-25 14:55:50,None,None,None
+16,LuigiPorto,luigi@gmail.com,32,Teu zadasdas,2024-01-25 14:47:21,None,None,None
+16,LuigiPorto,luigi@gmail.com,37,Matthew Ipneters,2024-01-25 14:56:21,None,None,None
+16,LuigiPorto,luigi@gmail.com,40,Estou vivinho da silva,2024-01-25 15:01:27,None,None,None
+17,Vcitor Diego,victor.ipnet@cloud,38,Eu sou o diegao da massa,2024-01-25 14:58:52,None,None,None
+17,Vcitor Diego,victor.ipnet@cloud,39,Estamos vivos,2024-01-25 15:01:17,None,None,None
+18,,,41,asd,2024-01-25 16:41:37,None,None,None
+19,matthewipnet123,matthewipnet,42,estamos vivos,2024-01-25 16:54:07,None,None,None
+20,LeoBorba,leonardo@ipnet,43,Sou leo borba, o chefe de voces,2024-01-29 13:47:04,None,None,None
+21,ShayIpnet,shay@ipneters.com,44,Eu sou uma ipneters,2024-01-29 13:48:41,None,None,None

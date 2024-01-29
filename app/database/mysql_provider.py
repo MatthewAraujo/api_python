@@ -1,9 +1,16 @@
 from database.db import connection
-
 class MySQL:
     def __init__(self):
         self.connection = connection
         self.cursor = self.connection.cursor()
+
+    # def check_database(self):
+    #     self.cursor.execute("SHOW DATABASES")
+    #     if ('twitter',) in self.cursor.fetchall():
+    #         return True
+    #     else:
+    #         create_database(self.cursor)
+    #         return False
 
     def query(self, sql, *args):
         self.cursor.execute(sql,*args)
